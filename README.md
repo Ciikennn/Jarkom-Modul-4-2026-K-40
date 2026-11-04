@@ -33,7 +33,7 @@ Seluruh node pada GNS3 berupa Docker container. Konfigurasi IP dimasukkan melalu
 
 #### GNS3 (VLSM)
 
-![Topologi GNS3 VLSM](images/topologi-gns3-vlsm.png)
+![Topologi GNS3 VLSM](Pictures/topologimodul4.jpeg)
 
 Tiap subnet ditandai dengan lingkaran hijau dan label `A1` sampai `A25`. Penomoran mengikuti urutan penelusuran topologi dari Cyberia.
 
@@ -638,4 +638,8 @@ Skrip: `ip addr replace 192.231.14.3/25 dev eth0` dan `ip route replace default 
 
 
 ### Testing
+
+![wired](Pictures/pingwired.png)
+
+![kari](Pictures/pingkari.png)
 
