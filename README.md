@@ -1011,7 +1011,7 @@ exit
 write
 ```
 
-#### Konfigurasi Host / Server (CPT)
+### Konfigurasi Host / Server (CPT)
 
 Konfigurasi IP pada Cisco Packet Tracer dilakukan secara statis melalui GUI masing-masing node pada menu **Desktop > IP Configuration (Static)**:
 
