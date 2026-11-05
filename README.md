@@ -27,8 +27,8 @@ Bagian laporan ini membahas **Subnetting dengan metode VLSM pada GNS3**.
   - [Perhitungan & Penggabungan CIDR](#perhitungan--penggabungan-cidr)
   - [Pembagian IP CIDR](#pembagian-ip-cidr)
   - [Konfigurasi Router CLI](#konfigurasi-router-cli)
-  - [Konfigurasi Host / Server](#konfigurasi-host--server)
-  - [Testing](#testing-cpt)
+  - [Konfigurasi Host / Server (CPT)](#konfigurasi-host--server-cpt)
+  - [Testing (CPT)](#testing-cpt)
 
 ## Pendahuluan
 
@@ -712,11 +712,9 @@ Berikut adalah hasil alokasi IP CIDR berdasarkan skema Bottom-Up Supernetting:
 
 Seluruh konfigurasi interface dan rute statik (*static route*) dimasukkan melalui CLI masing-masing router.
 
-<details>
-<summary><b>Klik untuk membuka Skrip Konfigurasi 13 Router</b></summary>
+#### Router Cyberia
 
 ```text
-! 1. Cyberia
 enable
 configure terminal
 hostname Cyberia
@@ -731,8 +729,11 @@ exit
 ip route 10.40.0.0 255.255.224.0 10.40.32.130
 exit
 write
+```
 
-! 2. Wired
+#### Router Wired
+
+```text
 enable
 configure terminal
 hostname Wired
@@ -760,8 +761,11 @@ ip route 10.40.0.0 255.255.248.0 10.40.20.6
 ip route 0.0.0.0 0.0.0.0 10.40.32.129
 exit
 write
+```
 
-! 3. Psyche
+#### Router Psyche
+
+```text
 enable
 configure terminal
 hostname Psyche
@@ -777,7 +781,7 @@ ip route 0.0.0.0 0.0.0.0 10.40.20.9
 exit
 write
 
-! 4. Copland
+#### Router Copland
 enable
 configure terminal
 hostname Copland
@@ -796,8 +800,11 @@ exit
 ip route 0.0.0.0 0.0.0.0 10.40.20.9
 exit
 write
+```
 
-! 5. Schumann
+#### Router Schumann
+
+```text
 enable
 configure terminal
 hostname Schumann
@@ -817,8 +824,11 @@ ip route 10.40.24.0 255.255.252.0 10.40.28.10
 ip route 0.0.0.0 0.0.0.0 10.40.20.9
 exit
 write
+```
 
-! 6. Accela
+#### Router Accela
+
+```text
 enable
 configure terminal
 hostname Accela
@@ -833,8 +843,11 @@ exit
 ip route 0.0.0.0 0.0.0.0 10.40.28.9
 exit
 write
+```
 
-! 7. Navi
+#### Router Navi
+
+```text
 enable
 configure terminal
 hostname Navi
@@ -857,8 +870,11 @@ exit
 ip route 0.0.0.0 0.0.0.0 10.40.20.1
 exit
 write
+```
 
-! 8. Tachibana
+#### Router Tachibana
+
+```text
 enable
 configure terminal
 hostname Tachibana
@@ -878,8 +894,11 @@ ip route 10.40.0.0 255.255.252.0 10.40.6.2
 ip route 0.0.0.0 0.0.0.0 10.40.20.5
 exit
 write
+```
 
-! 9. Deus
+#### Router Deus
+
+```text
 enable
 configure terminal
 hostname Deus
@@ -899,8 +918,11 @@ ip route 10.40.0.0 255.255.254.0 10.40.2.130
 ip route 0.0.0.0 0.0.0.0 10.40.6.1
 exit
 write
+```
 
-! 10. Protocol7
+#### Router Protocol7
+
+```text
 enable
 configure terminal
 hostname Protocol7
@@ -920,8 +942,11 @@ ip route 10.40.0.0 255.255.255.0 10.40.1.66
 ip route 0.0.0.0 0.0.0.0 10.40.2.129
 exit
 write
+```
 
-! 11. Knights
+#### Router Knights
+
+```text
 enable
 configure terminal
 hostname Knights
@@ -941,8 +966,11 @@ ip route 10.40.0.0 255.255.255.128 10.40.0.138
 ip route 0.0.0.0 0.0.0.0 10.40.1.65
 exit
 write
+```
 
-! 12. Phantoma
+#### Router Phantoma
+
+```text
 enable
 configure terminal
 hostname Phantoma
@@ -962,8 +990,11 @@ ip route 10.40.0.64 255.255.255.192 10.40.0.34
 ip route 0.0.0.0 0.0.0.0 10.40.0.137
 exit
 write
+```
 
-! 13. Shibuya
+#### Router Shibuya
+
+```text
 enable
 configure terminal
 hostname Shibuya
