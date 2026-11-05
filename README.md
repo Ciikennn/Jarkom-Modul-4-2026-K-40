@@ -44,7 +44,7 @@ Seluruh node pada GNS3 berupa Docker container. Konfigurasi IP dimasukkan melalu
 
 #### Cisco Packet Treasure (CIDR)
 
-![Topologi GNS3 VLSM](Pictures/CIDR_Topologi.jpeg)
+![Topologi CPT CIDR](Pictures/CIDR_Topologi.png)
 
 Tiap subnet ditandai dengan lingkaran hijau dan label `A1` sampai `A25`. Penomoran mengikuti urutan penelusuran topologi dari Cyberia.
 
