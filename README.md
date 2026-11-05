@@ -658,7 +658,7 @@ Pada Cisco Packet Tracer (CPT), subnetting dilakukan menggunakan metode **CIDR**
 
 Pohon subnetting berikut menggambarkan alur penggabungan hirarkis dari subnet dasar terbawah (`A1` s.d. `A25`) hingga membentuk supernet puncak `K1` (`10.40.0.0/18`).
 
-![Pohon Subnetting CIDR](Pictures/pohon_subnetting_excalidraw.png)
+![Pohon Subnetting CIDR](Pictures/CIDR_Subnet-Tree.png)
 
 ### Perhitungan & Penggabungan CIDR
 
@@ -669,6 +669,8 @@ Pohon subnetting berikut menggambarkan alur penggabungan hirarkis dari subnet da
    - Akibat penyesuaian *binary boundary* antar-cabang, rentang IP terpakai membentang dari `10.40.0.0` hingga `10.40.32.131` (total rentang **8.324 IP**).
    - Karena blok `/19` (8.192 IP) tidak mencukupi rentang 8.324 IP, maka supernet akhir yang menampung seluruh hirarki jaringan berada pada prefix **`/18`** (`10.40.0.0/18` dengan kapasitas 16.384 IP).
 4. **Efisiensi Routing:** Meskipun terdapat celah pengalokasian IP untuk menjaga kerapian *binary boundary*, metode ini menghasilkan tabel routing yang sangat efisien karena setiap router hanya membutuhkan 1 baris rute ringkas (*summary route*) untuk menjangkau seluruh subnet di bawahnya.
+
+![Penggabungan CIDR](Pictures/CIDR_Penggabungan.png)
 
 ### Pembagian IP CIDR
 
@@ -972,3 +974,59 @@ exit
 ip route 0.0.0.0 0.0.0.0 10.40.0.33
 exit
 write
+
+#### Host / Server
+
+Konfigurasi IP pada Cisco Packet Tracer dilakukan secara statis melalui GUI masing-masing node pada menu **Desktop > IP Configuration (Static)**:
+
+| Perangkat (Node) | Subnet | IP Address | Subnet Mask | Default Gateway |
+| :--- | :---: | :--- | :--- | :--- |
+| **PC JJ** | A1 | `10.40.32.2` | `255.255.255.128` | `10.40.32.1` |
+| **Laptop MyuMyu** | A1 | `10.40.32.3` | `255.255.255.128` | `10.40.32.1` |
+| **Server Kari** | A6 | `10.40.16.2` | `255.255.252.0` | `10.40.16.1` |
+| **Server Lin** | A6 | `10.40.16.3` | `255.255.252.0` | `10.40.16.1` |
+| **Laptop Masayuki** | A7 | `10.40.12.2` | `255.255.254.0` | `10.40.12.1` |
+| **Laptop Juri** | A8 | `10.40.14.2` | `255.255.255.192` | `10.40.14.1` |
+| **Server Akashic** | A9 | `10.40.28.2` | `255.255.255.248` | `10.40.28.1` |
+| **PC Omnipresence** | A11 | `10.40.24.2` | `255.255.252.0` | `10.40.24.1` |
+| **Laptop Denpa** | A11 | `10.40.24.3` | `255.255.252.0` | `10.40.24.1` |
+| **Laptop Alice** | A12 | `10.40.8.2` | `255.255.255.0` | `10.40.8.1` |
+| **PC Reika** | A12 | `10.40.8.3` | `255.255.255.0` | `10.40.8.1` |
+| **PC Taro** | A13 | `10.40.9.2` | `255.255.255.192` | `10.40.9.1` |
+| **PC Yasuo** | A14 | `10.40.10.2` | `255.255.255.0` | `10.40.10.1` |
+| **Laptop Miho** | A14 | `10.40.10.3` | `255.255.255.0` | `10.40.10.1` |
+| **Server Kuma** | A14 | `10.40.10.4` | `255.255.255.0` | `10.40.10.1` |
+| **Server Collective** | A15 | `10.40.4.2` | `255.255.254.0` | `10.40.4.1` |
+| **PC Ghost** | A15 | `10.40.4.3` | `255.255.254.0` | `10.40.4.1` |
+| **Laptop Lilith** | A17 | `10.40.2.2` | `255.255.255.128` | `10.40.2.1` |
+| **PC Specter** | A17 | `10.40.2.3` | `255.255.255.128` | `10.40.2.1` |
+| **Laptop Chisa** | A19 | `10.40.1.2` | `255.255.255.192` | `10.40.1.1` |
+| **PC Hodgeson** | A19 | `10.40.1.3` | `255.255.255.192` | `10.40.1.1` |
+| **Server Eiri** | A21 | `10.40.0.130` | `255.255.255.248` | `10.40.0.129` |
+| **PC Semi** | A23 | `10.40.0.2` | `255.255.255.224` | `10.40.0.1` |
+| **Laptop Lain** | A25 | `10.40.0.66` | `255.255.255.192` | `10.40.0.65` |
+| **PC Mika** | A25 | `10.40.0.67` | `255.255.255.192` | `10.40.0.65` |
+
+### Testing (CPT)
+
+Pengujian konektivitas pada Cisco Packet Tracer dilakukan melalui **Command Prompt** pada host untuk memverifikasi keterhubungan jaringan dari lokal hingga lintas cabang:
+
+1. **Pengujian Ping Gateway Lokal**
+   Pengujian `ping` dari **PC Mika** (`10.40.0.67`) ke Default Gateway-nya di Subnet A25 (`10.40.0.65` - Router Shibuya).
+
+   ![Ping Gateway Subnet A25](Pictures/Tes-gateway.png)
+
+2. **Pengujian Ping Lintas Subnet Dekat & Menengah**
+   Pengujian `ping` dari **PC Mika** (`10.40.0.67`) ke **PC Semi** di Subnet A23 (`10.40.0.2`) dan **Laptop Chisa** di Subnet A19 (`10.40.1.2`).
+
+   ![Ping Subnet A23 dan A19](Pictures/Tes-lintas-subnet.png)
+
+3. **Pengujian Ping End-to-End Lintas Cabang**
+   Pengujian `ping` dari **PC Mika** (`10.40.0.67`) ke **Server Kari** di Subnet A6 (`10.40.16.2`) dan **PC JJ** di Subnet A1 (`10.40.32.2`).
+
+   ![Ping End-to-End Subnet A6 dan A1](Pictures/Tes-endtoend.png)
+
+4. **Pengujian Traceroute Verifikasi Jalur Routing**
+   Pengujian `tracert 10.40.16.2` dari **PC Mika** (Subnet A25) ke **Server Kari** (Subnet A6) untuk membuktikan bahwa perambatan paket melompati 9 router secara hirarkis sesuai dengan ringkasan rute CIDR.
+
+   ![Tracert Mika ke Kari A6](Pictures/Traceroute.png)
