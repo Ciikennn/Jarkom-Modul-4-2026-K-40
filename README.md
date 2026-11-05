@@ -4,10 +4,10 @@ Laporan Praktikum Modul 4 Komunikasi Data dan Jaringan Komputer 2026, *The Wired
 
 Bagian laporan ini membahas **Subnetting dengan metode VLSM pada GNS3**.
 
-| Nama | NRP |
-|---|---|
-| Chilmi Muhammad Ulin Nuha | 003 |
-| Wahyu Yoga Wicaksono | 103 |
+| Nama | NRP | Pembagian Tugas |
+|---|---|---|
+| Chilmi Muhammad Ulin Nuha | 003 | CPT (CIDR)|
+| Wahyu Yoga Wicaksono | 103 | GNS3 (VLSM)|
 
 ## Daftar Isi
 
