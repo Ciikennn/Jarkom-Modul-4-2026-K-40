@@ -22,6 +22,13 @@ Bagian laporan ini membahas **Subnetting dengan metode VLSM pada GNS3**.
     - [Host / Server](#host--server)
   - [Konfigurasi Routing](#konfigurasi-routing)
   - [Testing](#testing)
+- [Subnetting Cisco Packet Tracer: Metode CIDR](#subnetting-cisco-packet-tracer-metode-cidr)
+  - [Pohon Subnetting CIDR](#pohon-subnetting-cidr)
+  - [Perhitungan & Penggabungan CIDR](#perhitungan--penggabungan-cidr)
+  - [Pembagian IP CIDR](#pembagian-ip-cidr)
+  - [Konfigurasi Router CLI](#konfigurasi-router-cli)
+  - [Konfigurasi Host / Server](#konfigurasi-host--server)
+  - [Testing](#testing-cpt)
 
 ## Pendahuluan
 
@@ -643,3 +650,325 @@ Skrip: `ip addr replace 192.231.14.3/25 dev eth0` dan `ip route replace default 
 
 ![kari](Pictures/pingkari.png)
 
+## Subnetting Cisco Packet Tracer: Metode CIDR
+
+Pada Cisco Packet Tracer (CPT), subnetting dilakukan menggunakan metode **CIDR** (*Classless Inter-Domain Routing*) dengan skema penggabungan rute *Bottom-Up Supernetting* berbasis prefix privat `10.40.0.0`.
+
+### Pohon Subnetting CIDR
+
+Pohon subnetting berikut menggambarkan alur penggabungan hirarkis dari subnet dasar terbawah (`A1` s.d. `A25`) hingga membentuk supernet puncak `K1` (`10.40.0.0/18`).
+
+![Pohon Subnetting CIDR](Pictures/pohon_subnetting_excalidraw.png)
+
+### Perhitungan & Penggabungan CIDR
+
+1. **Prinsip Bottom-Up Supernetting:** Penggabungan dilakukan mulai dari pasangan subnet terbawah yang bertetangga pada topologi fisik hingga membentuk kelompok penggabungan (B1–B10, C1–C4, D1–D3, E1–E2, F1, G1, H1, J1, dan K1).
+2. **Binary Boundary Alignment:** Setiap alamat network ID penggabungan diwajibkan berada pada batas kelipatan bit biner (*binary boundary*) sesuai ukuran prefix-nya.
+3. **Penentuan Prefix Supernet Puncak (K1):**
+   - Total kebutuhan IP murni seluruh subnet = **4.188 IP**.
+   - Akibat penyesuaian *binary boundary* antar-cabang, rentang IP terpakai membentang dari `10.40.0.0` hingga `10.40.32.131` (total rentang **8.324 IP**).
+   - Karena blok `/19` (8.192 IP) tidak mencukupi rentang 8.324 IP, maka supernet akhir yang menampung seluruh hirarki jaringan berada pada prefix **`/18`** (`10.40.0.0/18` dengan kapasitas 16.384 IP).
+4. **Efisiensi Routing:** Meskipun terdapat celah pengalokasian IP untuk menjaga kerapian *binary boundary*, metode ini menghasilkan tabel routing yang sangat efisien karena setiap router hanya membutuhkan 1 baris rute ringkas (*summary route*) untuk menjangkau seluruh subnet di bawahnya.
+
+### Pembagian IP CIDR
+
+Berikut adalah hasil alokasi IP CIDR berdasarkan skema Bottom-Up Supernetting:
+
+| Subnet | Network ID | Netmask | Broadcast | Range IP |
+|---|---|---|---|---|
+| A23 | 10.40.0.0 | 255.255.255.224 | 10.40.0.31 | 10.40.0.1 - 10.40.0.30 |
+| A24 | 10.40.0.32 | 255.255.255.252 | 10.40.0.35 | 10.40.0.33 - 10.40.0.34 |
+| A25 | 10.40.0.64 | 255.255.255.192 | 10.40.0.127 | 10.40.0.65 - 10.40.0.126 |
+| A21 | 10.40.0.128 | 255.255.255.248 | 10.40.0.135 | 10.40.0.129 - 10.40.0.134 |
+| A22 | 10.40.0.136 | 255.255.255.252 | 10.40.0.139 | 10.40.0.137 - 10.40.0.138 |
+| A19 | 10.40.1.0 | 255.255.255.192 | 10.40.1.63 | 10.40.1.1 - 10.40.1.62 |
+| A20 | 10.40.1.64 | 255.255.255.252 | 10.40.1.67 | 10.40.1.65 - 10.40.1.66 |
+| A17 | 10.40.2.0 | 255.255.255.128 | 10.40.2.127 | 10.40.2.1 - 10.40.2.126 |
+| A18 | 10.40.2.128 | 255.255.255.252 | 10.40.2.131 | 10.40.2.129 - 10.40.2.130 |
+| A15 | 10.40.4.0 | 255.255.254.0 | 10.40.5.255 | 10.40.4.1 - 10.40.5.254 |
+| A16 | 10.40.6.0 | 255.255.255.252 | 10.40.6.3 | 10.40.6.1 - 10.40.6.2 |
+| A12 | 10.40.8.0 | 255.255.255.0 | 10.40.8.255 | 10.40.8.1 - 10.40.8.254 |
+| A13 | 10.40.9.0 | 255.255.255.192 | 10.40.9.63 | 10.40.9.1 - 10.40.9.62 |
+| A14 | 10.40.10.0 | 255.255.255.0 | 10.40.10.255 | 10.40.10.1 - 10.40.10.254 |
+| A7 | 10.40.12.0 | 255.255.254.0 | 10.40.13.255 | 10.40.12.1 - 10.40.13.254 |
+| A8 | 10.40.14.0 | 255.255.255.192 | 10.40.14.63 | 10.40.14.1 - 10.40.14.62 |
+| A6 | 10.40.16.0 | 255.255.252.0 | 10.40.19.255 | 10.40.16.1 - 10.40.19.254 |
+| A4 | 10.40.20.0 | 255.255.255.252 | 10.40.20.3 | 10.40.20.1 - 10.40.20.2 |
+| A5 | 10.40.20.4 | 255.255.255.252 | 10.40.20.7 | 10.40.20.5 - 10.40.20.6 |
+| A3 | 10.40.20.8 | 255.255.255.248 | 10.40.20.15 | 10.40.20.9 - 10.40.20.14 |
+| A11 | 10.40.24.0 | 255.255.252.0 | 10.40.27.255 | 10.40.24.1 - 10.40.27.254 |
+| A9 | 10.40.28.0 | 255.255.255.248 | 10.40.28.7 | 10.40.28.1 - 10.40.28.6 |
+| A10 | 10.40.28.8 | 255.255.255.252 | 10.40.28.11 | 10.40.28.9 - 10.40.28.10 |
+| A1 | 10.40.32.0 | 255.255.255.128 | 10.40.32.127 | 10.40.32.1 - 10.40.32.126 |
+| A2 | 10.40.32.128 | 255.255.255.252 | 10.40.32.131 | 10.40.32.129 - 10.40.32.130 |
+
+### Konfigurasi Router CLI
+
+Seluruh konfigurasi interface dan rute statik (*static route*) dimasukkan melalui CLI masing-masing router.
+
+<details>
+<summary><b>Klik untuk membuka Skrip Konfigurasi 13 Router</b></summary>
+
+```text
+! 1. Cyberia
+enable
+configure terminal
+hostname Cyberia
+interface fa0/1
+ ip address 10.40.32.129 255.255.255.252
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.32.1 255.255.255.128
+ no shutdown
+exit
+ip route 10.40.0.0 255.255.224.0 10.40.32.130
+exit
+write
+
+! 2. Wired
+enable
+configure terminal
+hostname Wired
+interface fa0/0
+ ip address 10.40.32.130 255.255.255.252
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.20.9 255.255.255.248
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.20.1 255.255.255.252
+ no shutdown
+exit
+interface fa1/1
+ ip address 10.40.20.5 255.255.255.252
+ no shutdown
+exit
+ip route 10.40.16.0 255.255.252.0 10.40.20.10
+ip route 10.40.12.0 255.255.252.0 10.40.20.11
+ip route 10.40.24.0 255.255.248.0 10.40.20.12
+ip route 10.40.8.0 255.255.252.0 10.40.20.2
+ip route 10.40.0.0 255.255.248.0 10.40.20.6
+ip route 0.0.0.0 0.0.0.0 10.40.32.129
+exit
+write
+
+! 3. Psyche
+enable
+configure terminal
+hostname Psyche
+interface fa0/0
+ ip address 10.40.20.10 255.255.255.248
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.16.1 255.255.252.0
+ no shutdown
+exit
+ip route 0.0.0.0 0.0.0.0 10.40.20.9
+exit
+write
+
+! 4. Copland
+enable
+configure terminal
+hostname Copland
+interface fa0/0
+ ip address 10.40.20.11 255.255.255.248
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.12.1 255.255.254.0
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.14.1 255.255.255.192
+ no shutdown
+exit
+ip route 0.0.0.0 0.0.0.0 10.40.20.9
+exit
+write
+
+! 5. Schumann
+enable
+configure terminal
+hostname Schumann
+interface fa0/0
+ ip address 10.40.20.12 255.255.255.248
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.28.1 255.255.255.248
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.28.9 255.255.255.252
+ no shutdown
+exit
+ip route 10.40.24.0 255.255.252.0 10.40.28.10
+ip route 0.0.0.0 0.0.0.0 10.40.20.9
+exit
+write
+
+! 6. Accela
+enable
+configure terminal
+hostname Accela
+interface fa0/0
+ ip address 10.40.28.10 255.255.255.252
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.24.1 255.255.252.0
+ no shutdown
+exit
+ip route 0.0.0.0 0.0.0.0 10.40.28.9
+exit
+write
+
+! 7. Navi
+enable
+configure terminal
+hostname Navi
+interface fa0/0
+ ip address 10.40.20.2 255.255.255.252
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.8.1 255.255.255.0
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.9.1 255.255.255.192
+ no shutdown
+exit
+interface fa1/1
+ ip address 10.40.10.1 255.255.255.0
+ no shutdown
+exit
+ip route 0.0.0.0 0.0.0.0 10.40.20.1
+exit
+write
+
+! 8. Tachibana
+enable
+configure terminal
+hostname Tachibana
+interface fa0/0
+ ip address 10.40.20.6 255.255.255.252
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.4.1 255.255.254.0
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.6.1 255.255.255.252
+ no shutdown
+exit
+ip route 10.40.0.0 255.255.252.0 10.40.6.2
+ip route 0.0.0.0 0.0.0.0 10.40.20.5
+exit
+write
+
+! 9. Deus
+enable
+configure terminal
+hostname Deus
+interface fa0/0
+ ip address 10.40.6.2 255.255.255.252
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.2.1 255.255.255.128
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.2.129 255.255.255.252
+ no shutdown
+exit
+ip route 10.40.0.0 255.255.254.0 10.40.2.130
+ip route 0.0.0.0 0.0.0.0 10.40.6.1
+exit
+write
+
+! 10. Protocol7
+enable
+configure terminal
+hostname Protocol7
+interface fa0/0
+ ip address 10.40.2.130 255.255.255.252
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.1.1 255.255.255.192
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.1.65 255.255.255.252
+ no shutdown
+exit
+ip route 10.40.0.0 255.255.255.0 10.40.1.66
+ip route 0.0.0.0 0.0.0.0 10.40.2.129
+exit
+write
+
+! 11. Knights
+enable
+configure terminal
+hostname Knights
+interface fa0/0
+ ip address 10.40.1.66 255.255.255.252
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.0.129 255.255.255.248
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.0.137 255.255.255.252
+ no shutdown
+exit
+ip route 10.40.0.0 255.255.255.128 10.40.0.138
+ip route 0.0.0.0 0.0.0.0 10.40.1.65
+exit
+write
+
+! 12. Phantoma
+enable
+configure terminal
+hostname Phantoma
+interface fa0/0
+ ip address 10.40.0.138 255.255.255.252
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.0.1 255.255.255.224
+ no shutdown
+exit
+interface fa1/0
+ ip address 10.40.0.33 255.255.255.252
+ no shutdown
+exit
+ip route 10.40.0.64 255.255.255.192 10.40.0.34
+ip route 0.0.0.0 0.0.0.0 10.40.0.137
+exit
+write
+
+! 13. Shibuya
+enable
+configure terminal
+hostname Shibuya
+interface fa0/0
+ ip address 10.40.0.34 255.255.255.252
+ no shutdown
+exit
+interface fa0/1
+ ip address 10.40.0.65 255.255.255.192
+ no shutdown
+exit
+ip route 0.0.0.0 0.0.0.0 10.40.0.33
+exit
+write
